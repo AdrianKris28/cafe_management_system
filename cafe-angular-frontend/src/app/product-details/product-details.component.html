@@ -1,0 +1,28 @@
+<div class="container mt-5">
+  <div *ngIf="responseMessage" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+    {{responseMessage}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+  </div> 
+
+    <div class="row">
+      <div class="col-md-6">
+        <img [src]="imageUrl" alt="Product Image" class="img-fluid" style="height: 300px;object-fit: cover;width: 300px;">
+      </div>
+      <div class="col-md-6">
+        <h2>{{product.name}}</h2>
+        <p>Description: {{product.description}}</p>
+        <p>Category Name: {{product.categoryName}}</p>
+        <h4>Price: {{product.price | currency:'IDR '}}</h4>
+        
+        <form enctype="multipart/form-data">
+          <input type="file" class="form-control border-0" #uploadImage (change)="onFileSelected($event)">
+          <button type="submit" class="btn btn-primary mt-2" (click)="handleSubmitImageForm()">Upload</button>
+        </form>
+
+        <button routerLink="/product" class="btn btn-danger mt-3 float-right">Back</button>
+      </div>
+    </div>
+  </div>
+  

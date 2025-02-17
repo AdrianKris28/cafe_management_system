@@ -1,0 +1,194 @@
+<h2 class="text-center mt-5 mb-3">Manage Order</h2>
+
+<div *ngIf="responseMessage" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+    {{responseMessage}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>    
+
+<button class="btn btn-primary float-right" (click)="submitOrderForm(manageOrderForm.controls.email.value)" type="button">Submit and Generate Report</button>
+
+<div class="d-flex col">
+    <div class="col-5 manage-order-container">
+        <form [formGroup]="manageOrderForm">
+          
+                    <div class="card">
+                        <h5 class="card-header">Customer Details:</h5>
+                        <div class="card-body">
+                                
+
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" formControlName="name" class="form-control" id="name" placeholder="Name" formControlName="name">
+                                    <div *ngIf="manageOrderForm.controls['name'].invalid && (manageOrderForm.controls['name'].touched || manageOrderForm.controls['name'].dirty)" style="color: red;">
+                                        <div *ngIf="manageOrderForm.controls['name'].errors?.['required']">
+                                            This field is required.
+                                        </div>
+                                    
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" formControlName="email" class="form-control" id="email" placeholder="Email" formControlName="email">
+                                    <div *ngIf="manageOrderForm.controls['email'].invalid && (manageOrderForm.controls['email'].touched || manageOrderForm.controls['email'].dirty)" style="color: red;">
+                                        <div *ngIf="manageOrderForm.controls['email'].errors?.['required']">
+                                            This field is required.
+                                        </div>
+                                        <div *ngIf="manageOrderForm.controls['email'].errors?.['email']">
+                                            Please input valid email.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contactNumber">Contact Number</label>
+                                    <input type="text" formControlName="contactNumber" class="form-control" id="contactNumber" placeholder="contactNumber" formControlName="contactNumber">
+                                    <div *ngIf="manageOrderForm.controls['contactNumber'].invalid && (manageOrderForm.controls['contactNumber'].touched || manageOrderForm.controls['contactNumber'].dirty)" style="color: red;">
+                                        <div *ngIf="manageOrderForm.controls['contactNumber'].errors?.['pattern']">
+                                            The input type must be a number.
+                                        </div>
+                                        <div *ngIf="manageOrderForm.controls['contactNumber'].errors?.['required']">
+                                            This field is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="paymentMethod">Payment Method</label>
+                                    <select id="paymentMethod" class="form-control" formControlName="paymentMethod">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Debit">Debit</option>
+                                        <option value="QRIS">QRIS</option>
+                                    </select>
+                                    <div *ngIf="manageOrderForm.controls['paymentMethod'].invalid && (manageOrderForm.controls['paymentMethod'].touched || manageOrderForm.controls['paymentMethod'].dirty)" style="color: red;">
+                                        <div *ngIf="manageOrderForm.controls['paymentMethod'].errors?.['required']">
+                                            This field is required.
+                                        </div>
+                                    </div>
+                                </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card mt-5">
+                        <h5 class="card-header">Select Product:</h5>
+                        <div class="card-body">
+                        
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select formControlName="category" class="form-control" [(ngModel)]="selectedCategory" (ngModelChange)="setSelectedCategory(selectedCategory)">
+                                        <option value=""></option>
+                                        <option *ngFor="let category of allCategory" [value]="category.id">{{category.name}}</option>
+                                    </select>
+
+                                    <div *ngIf="manageOrderForm.controls['category'].invalid && (manageOrderForm.controls['category'].touched || manageOrderForm.controls['category'].dirty)" style="color: red;">
+                                        <div *ngIf="manageOrderForm.controls['category'].errors?.['required']">
+                                            This field is required.
+                                        </div>
+                                    </div>
+                            
+                                </div>
+                                <div class="form-group">
+                                    <label for="product">Product</label>
+                                    <select formControlName="product" class="form-control" [(ngModel)]="selectedProduct" (ngModelChange)="setSelectedProduct(selectedProduct)">
+                                        <option value=""></option>
+                                        <option *ngFor="let product of allProductByCategory" [value]="product.id">{{product.name}}</option>
+                                    </select>
+                                    <div *ngIf="manageOrderForm.controls['product'].invalid && (manageOrderForm.controls['product'].touched || manageOrderForm.controls['product'].dirty)" style="color: red;">
+                                        <div *ngIf="manageOrderForm.controls['product'].errors?.['required']">
+                                            This field is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="price">Price</label>
+                                    <input type="text" class="form-control" id="price" [value]="price" placeholder="Price" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quantity">Quantity</label>
+                                    <input type="number" class="form-control" id="quantity"  min="1" [ngModelOptions]="{standalone: true}" [(ngModel)]="quantity" (ngModelChange)="setTotalPrice()" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <label for="total">Total</label>
+                                    <input type="text" class="form-control" id="total"  [value]="totalPrice" readonly>
+                                </div>
+                        
+                        
+                                <button type="submit" class="btn btn-primary" (click)="addOrderToArray()" [disabled]="manageOrderForm.invalid || quantity == 0">+ Add</button>
+                            
+                        </div>
+                    </div>
+                
+            </form>
+
+
+            
+        </div>
+
+        <div class="col-7">
+            <table class="table table-striped border mt-5">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngIf="addedProduct.length > 0">
+                        <ng-container *ngIf="addedProduct.length == 1">
+                            <tr *ngFor="let p of addedProduct[0].productDetails; let i = index">
+                                <td>{{i+1}}</td>
+                                <td>{{p.name}}</td>
+                                <td>{{p.price}}</td>
+                                <td>{{p.quantity}}</td>
+                                <td>{{p.total}} <button class="badge badge-danger" (click)="removeOrder(p.id, addedProduct[0].email)" type="button">Remove</button></td>
+                            </tr>
+                    
+                        </ng-container>
+
+                        <ng-container *ngIf="addedProduct.length > 1">
+                            <ng-container *ngFor="let ap of addedProduct">
+                                <ng-container *ngIf="ap.email == manageOrderForm.controls['email'].value">
+                                    <tr *ngFor="let p of ap.productDetails; let i = index">
+                                        <td>{{i+1}}</td>
+                                        <td>{{p.name}}</td>
+                                        <td>{{p.price}}</td>
+                                        <td>{{p.quantity}}</td>
+                                        <td>{{p.total}} <button class="badge badge-danger" (click)="removeOrder(p.id, ap.email)">Remove</button></td>
+                                    </tr>
+                            
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </tbody>
+            </table>
+
+            <div class="grand-total">
+                <ng-container *ngIf="addedProduct.length == 1">
+                  <span>
+                    Grand Total: {{addedProduct[0].totalAmount}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="addedProduct.length > 1">
+                  <ng-container *ngFor="let ap of addedProduct">
+                    <ng-container *ngIf="ap.email == manageOrderForm.controls['email'].value">
+                      <span>
+                        Grand Total: {{ap.totalAmount}}
+                      </span>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </div>
+
+            <div *ngIf="addedProduct?.length == 0">
+                <div class="alert alert-info" role="alert">
+                  <h4 class="alert-heading">NO ORDER!</h4>
+                  <p>No Product has been added</p>
+                </div>
+            </div>
+        </div>
+
+</div>

@@ -1,0 +1,283 @@
+<h2 class="text-center mt-5 mb-3">Product</h2>
+
+<div class="row mb-2">
+    <div class="col-8 categories">
+        <button type="button" (click)="getAllProduct()" class="category" [class.active-all]="allCategoryButton"> 
+          All Category
+        </button>
+        <button type="button" (click)="getProductByCategory(category?.id)" class="category" *ngFor="let category of allCategory" [class.active]="activeCategory === category?.id"> 
+            {{category.name}}
+        </button>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col">
+           <!-- Search input -->
+      <div class="input-group">
+        <input type="search" class="form-control" placeholder="Search Box. . ." (ngModelChange)="filterProduct(name.value)" #name="ngModel" name="name" ngModel>
+        <div class="input-group-append justify-content-end">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductModal" (click)="clearResponseMessage()">+ Add Product</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <!-- Response message -->
+      <div *ngIf="responseMessage" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        {{responseMessage}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="clearResponseMessage()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+</div>
+
+<table class="table table-striped border">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Product Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Action</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let product of allProduct; let i = index">
+            <td>{{i + 1}}</td>
+            <td>{{product.name}}</td>
+            <td>{{product.description}}</td>
+            <td>{{product.price | currency:'IDR '}}</td>
+            <td>{{product.categoryName}}</td>
+            <td>
+                <button  [routerLink]="['/product-details/' + product.id]" routerLinkActive="router-link-active"  class="badge badge-primary mr-1 border-0">View</button>
+                <button (click)="updateProduct(product.id)" data-toggle="modal" data-target="#updateProductModal" class="badge badge-success mr-1 border-0">Update</button>
+                <button (click)="selectProduct(product.id)" data-toggle="modal" data-target="#deleteProductModal" class="badge badge-danger border-0">Delete</button>
+            </td>
+            <td>
+                <select id="status" class="form-control" name="status" [(ngModel)]="product.status" (ngModelChange)="changeStatus(product.id, product.status)">
+                    <option value="false">
+                       Non Active
+                    </option>
+                    <option value="true">
+                        Active
+                    </option>
+                </select>
+              
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div *ngIf="allProduct?.length == 0">
+    <div class="alert alert-info" role="alert">
+      <h4 class="alert-heading">NO PRODUCT!</h4>
+      <p>No Product were found</p>
+    </div>
+</div>
+
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Add Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form" [formGroup]="addProductForm">
+            <div class="modal-body">
+                    <div class="form-group">
+                            <label for="name">Product Name</label>
+                            <input formControlName="name" type="text" class="form-control" id="name" placeholder="Enter the name of the product" >
+                            <div *ngIf="addProductForm.controls['name'].invalid && (addProductForm.controls['name'].touched || addProductForm.controls['name'].dirty)" style="color: red;">
+                                <div *ngIf="addProductForm.controls['name'].errors?.['required']">
+                                    This field is required.
+                                </div>
+                                <div *ngIf="addProductForm.controls['name'].errors?.['minlength']">
+                                    Name must be more than 4 characters.
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                            <label for="category">Category</label>
+                            <select formControlName="categoryId" id="category" required class="form-control">
+                                <option value="" class="form-control"></option>
+                                <option *ngFor="let category of allCategory" [value]="category.id" class="form-control">{{category.name}}</option>
+                            </select>
+                    
+                            <div *ngIf="addProductForm.controls['categoryId'].invalid && (addProductForm.controls['categoryId'].touched || addProductForm.controls['categoryId'].dirty)" style="color: red;">
+                                <div *ngIf="addProductForm.controls['categoryId'].errors?.['required']">
+                                    This field is required.
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea formControlName="description" class="form-control" id="description" placeholder="Description of the product" rows="4" cols="50"></textarea>
+                        <div *ngIf="addProductForm.controls['description'].invalid && (addProductForm.controls['description'].touched || addProductForm.controls['description'].dirty)" style="color: red;">
+                            <div *ngIf="addProductForm.controls['description'].errors?.['required']">
+                                This field is required.
+                            </div>
+                            <div *ngIf="addProductForm.controls['description'].errors?.['minlength']">
+                                Description must be more than 10 characters.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input formControlName="price" type="number" class="form-control" id="price" placeholder="Enter the price of the product" min="5000">
+                        <div *ngIf="addProductForm.controls['price'].invalid && (addProductForm.controls['price'].touched || addProductForm.controls['price'].dirty)" style="color: red;">
+                            <div *ngIf="addProductForm.controls['price'].errors?.['required']">
+                                This field is required.
+                            </div>
+                            <div *ngIf="addProductForm.controls['price'].errors?.['min']">
+                                Minimum price is 5000.
+                            </div>
+                        
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="responseMessage" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        {{responseMessage}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>            
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="addProductModalCloseBtn" data-dismiss="modal">Close</button>
+                    <button type="button"  class="btn btn-primary" (click)="handleAddProductSubmit()" [disabled]="addProductForm.invalid">Add</button>
+                </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Update Product Modal -->
+<div class="modal fade" id="updateProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Update Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form class="form" [formGroup]="updateProductForm" *ngIf="updatedProduct">
+            <input type="hidden" formControlName="id" [value]="updatedProduct.id">
+            <div class="modal-body">
+                    <div class="form-group">
+                            <label for="name">Product Name</label>
+                            <input formControlName="name" [value]="updatedProduct.name" type="text" class="form-control" id="name" placeholder="Enter the name of the product">
+                          
+                            <div *ngIf="updateProductForm.controls['name'].invalid && (updateProductForm.controls['name'].touched || updateProductForm.controls['name'].dirty)" style="color: red;">
+                                <div *ngIf="updateProductForm.controls['name'].errors?.['required']">
+                                    This field is required.
+                                </div>
+                                <div *ngIf="updateProductForm.controls['name'].errors?.['minlength']">
+                                    Name must be more than 4 characters.
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                            <label for="category">Category</label>
+                            <select formControlName="categoryId" [value]="updatedProduct.categoryId" id="category" required class="form-control">
+                                <option value="" class="form-control"></option>
+                                <option *ngFor="let category of allCategory" [value]="category.id" class="form-control">{{category.name}}</option>
+                            </select>
+                    
+                            <div *ngIf="updateProductForm.controls['categoryId'].invalid && (updateProductForm.controls['categoryId'].touched || updateProductForm.controls['categoryId'].dirty)" style="color: red;">
+                                <div *ngIf="updateProductForm.controls['categoryId'].errors?.['required']">
+                                    This field is required.
+                                </div>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea formControlName="description" [value]="updatedProduct.description" class="form-control" id="description" placeholder="Description of the product" rows="4" cols="50"></textarea>
+                        <div *ngIf="updateProductForm.controls['description'].invalid && (updateProductForm.controls['description'].touched || updateProductForm.controls['description'].dirty)" style="color: red;">
+                            <div *ngIf="updateProductForm.controls['description'].errors?.['required']">
+                                This field is required.
+                            </div>
+                            <div *ngIf="updateProductForm.controls['description'].errors?.['minlength']">
+                                Description must be more than 10 characters.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input formControlName="price" type="number" [value]="updatedProduct.price" class="form-control" id="price" placeholder="Enter the price of the product" min="5000">
+                        <div *ngIf="updateProductForm.controls['price'].invalid && (updateProductForm.controls['price'].touched || updateProductForm.controls['price'].dirty)" style="color: red;">
+                            <div *ngIf="updateProductForm.controls['price'].errors?.['required']">
+                                This field is required.
+                            </div>
+                            <div *ngIf="updateProductForm.controls['price'].errors?.['min']">
+                                Minimum price is 5000.
+                            </div>
+                        
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="responseMessage" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        {{responseMessage}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>            
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="updateProductModalCloseBtn" data-dismiss="modal">Close</button>
+                    <button type="button"  class="btn btn-primary" (click)="handleUpdateProductSubmit()" [disabled]="updateProductForm.invalid">Add</button>
+                </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Product Modal -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" *ngIf="selectedProduct">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Delete Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+            <div class="modal-body">
+                    <h6>Are you sure you want to delete product {{selectedProduct.name}}</h6>
+                    
+                    <div *ngIf="responseMessage" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        {{responseMessage}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>            
+            </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="deleteProductCloseBtn" data-dismiss="modal">Close</button>
+                    <button type="button"  class="btn btn-danger" (click)="deleteProduct(selectedProduct.id)">Delete</button>
+                </div>
+       
+      </div>
+    </div>
+  </div>

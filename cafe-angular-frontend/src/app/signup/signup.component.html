@@ -1,0 +1,66 @@
+<form class="mt-5" [formGroup]="signUpForm">
+  <div class="form-group">
+    <label for="">Name</label>
+    <input formControlName="name" type="text" class="form-control" id="" placeholder="Name" >
+    <div *ngIf="signUpForm.controls['name'].invalid && (signUpForm.controls['name'].touched || signUpForm.controls['name'].dirty)" style="color: red;">
+      <div *ngIf="signUpForm.controls['name'].errors?.['required']">
+        Name is required.
+      </div>
+      <div *ngIf="signUpForm.controls['name'].errors?.['minlength']">
+        Name must be at least 4 characters long.
+      </div>
+   </div>
+  </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Email address</label>
+      <input formControlName="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" >
+      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      <div *ngIf="signUpForm.controls['email'].invalid && signUpForm.controls['email'].touched" style="color: red;">
+        <div *ngIf="signUpForm.controls['email'].errors?.['required']">
+          Email is required.
+        </div>
+        <div *ngIf="signUpForm.controls['email'].errors?.['email']">
+          Email must be valid
+        </div>
+     </div>
+    </div>
+    <div class="form-group">
+      <label for="">Contact Number</label>
+      <input formControlName="contactNumber" type="text" class="form-control" id="" placeholder="Contact Number">
+      <div *ngIf="signUpForm.controls['contactNumber'].invalid && signUpForm.controls['contactNumber'].touched" style="color: red;">
+        <div *ngIf="signUpForm.controls['contactNumber'].errors?.['required']">
+          Contact Number is required.
+        </div>
+        <div *ngIf="signUpForm.controls['contactNumber'].errors.pattern">
+          The input type must be a number.
+        </div>
+     </div>
+    </div>
+    <div class="form-group">
+      <label for="">Password</label>
+      <input formControlName="password" type="password" class="form-control" id="" placeholder="Password">
+      <div *ngIf="signUpForm.controls.password.invalid && signUpForm.controls.password.touched" style="color: red;">
+      <span *ngIf="signUpForm.controls.password.errors.required">Password is required</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="">Confirm Password</label>
+      <input formControlName="confirmPassword" type="password" class="form-control" id="" placeholder="Confirm Password">
+      <div *ngIf="signUpForm.controls.confirmPassword.invalid && signUpForm.controls.confirmPassword.touched" style="color: red;">
+        <span *ngIf="signUpForm.controls.confirmPassword.errors.required">Confirm Password is required</span>
+      </div>
+      <span *ngIf="signUpForm.controls.password.value != signUpForm.controls.confirmPassword.value && signUpForm.controls.confirmPassword.dirty" style="color: red;">Password does not match</span>
+      
+    </div>
+   
+    <button type="submit" [disabled]="signUpForm.invalid" (click)="handleSubmit()" class="btn btn-primary">Submit</button>
+
+    <div *ngIf="responseMessage" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+      {{responseMessage}}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    
+    
+</form>

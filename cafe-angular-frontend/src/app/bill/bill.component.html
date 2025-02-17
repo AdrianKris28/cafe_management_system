@@ -1,0 +1,108 @@
+<h2 class="text-center mt-5 mb-3">View Bill</h2>
+
+<!-- Response Message -->
+<div *ngIf="responseMessage" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+{{responseMessage}}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
+</div>
+
+<div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-striped border">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact Number</th>
+                <th>Payment Method</th>
+                <th>Total Amount</th>
+                <th>Report</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let bill of allBill; let i = index">
+                <td>{{i+1}}</td>
+                <td>{{bill.name}}</td>
+                <td>{{bill.email}}</td>
+                <td>{{bill.contactNumber}}</td>
+                <td>{{bill.paymentMethod}}</td>
+                <td>{{bill.total}}</td>
+                <td>{{bill.uuid}}</td>
+                <td style="display: flex;">
+                    <button class="badge badge-primary mr-2 border-0" data-toggle="modal" data-target="#detailBillModal"  (click)="viewBill(bill.id)">View</button>
+                    <button class="badge badge-success mr-2 border-0" (click)="downloadReportAction(bill)">Download</button>
+                    <button class="badge badge-danger mr-2 border-0" (click)="deleteBill(bill.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- View Bill Modal -->
+<ng-container *ngIf="bill">
+<div class="modal fade" id="detailBillModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Detail Bill</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      
+        <div class="modal-body">
+            <div class="card">
+                <div class="card-header">
+                  {{bill.uuid}}
+                </div>
+                <div class="card-body">
+                  <p class="card-text">Name: {{bill.name}}</p>
+                  <p class="card-text">Email: {{bill.email}}</p>
+                  <p class="card-text">Contact Number: {{bill.contactNumber}}</p>
+                  <p class="card-text">Payment Method: {{bill.paymentMethod}}</p>
+                  <p class="card-text">Total Amount: {{bill.total}}</p>
+
+                  <table class="table table-striped border">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Category</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let product of bill.productDetail">
+                            <td>{{product.name}}</td>
+                            <td>{{product.price}}</td>
+                            <td>{{product.quantity}}</td>
+                            <td>{{product.category}}</td>
+                            <td>{{product.total}}</td>
+                        </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" id="detailBillModalBtn" data-dismiss="modal">Close</button>
+        </div>
+     
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+
+
+<script type="text/javascript">
+
+</script>
+

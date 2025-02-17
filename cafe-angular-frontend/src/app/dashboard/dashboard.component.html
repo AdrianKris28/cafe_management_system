@@ -1,0 +1,16 @@
+
+<div class="total mt-5">
+    <h3>Total Category: {{data?.category}}</h3>
+    <h3>Total Product: {{data?.product}}</h3>
+    <h3>Total Bill: {{data?.bill}}</h3>
+</div>
+
+
+<div *ngIf="message" class="alert alert-danger alert-dismissible fade show mt-3 text-center" role="alert">
+    {{message}}
+    <button type="button" (click)="clearResponseMessage()" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+

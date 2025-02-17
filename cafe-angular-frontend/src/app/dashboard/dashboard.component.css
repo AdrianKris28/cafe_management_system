@@ -1,0 +1,4 @@
+div.total{
+    display: flex;
+    justify-content: space-evenly;
+}
